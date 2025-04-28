@@ -11,6 +11,9 @@ composeBom = "2023.08.00"
 hilt = "2.49"
 kspVersion = "1.9.0-1.0.13"
 retrofitVersion = "2.9.0"
+googleApiServicesSheetsVersion = "v4-rev516-1.23.0"
+googleApiClientAndroidVersion = "1.23.0"
+playServicesAuthVersion = "16.0.1"
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -30,6 +33,9 @@ hilt-android = { group = "com.google.dagger", name = "hilt-android" , version.re
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler" , version.ref = "hilt"}
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit" , version.ref = "retrofitVersion"}
 retrofit-gson-converter = { group = "com.squareup.retrofit2", name = "converter-gson" , version.ref = "retrofitVersion"}
+google-api-services-sheets  = { group = "com.google.apis", name = "google-api-services-sheets" , version.ref = "googleApiServicesSheetsVersion"}
+google-api-client-android = { group = "com.google.api-client", name = "google-api-client-android" , version.ref = "googleApiClientAndroidVersion"}
+play-services-auth = { group = "com.google.android.gms", name = "play-services-auth" , version.ref = "playServicesAuthVersion"}
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }

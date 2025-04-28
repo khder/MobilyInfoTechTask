@@ -73,4 +73,8 @@ dependencies {
     ksp(libs.hilt.compiler)
     implementation(libs.retrofit)
     implementation(libs.retrofit.gson.converter)
+    //google sheets and services
+    implementation(libs.google.api.services.sheets)
+    implementation(libs.google.api.client.android)
+    implementation(libs.play.services.auth)
 }
