@@ -7,7 +7,7 @@ import com.mobily.bugit.domain.getBugs.GetBugsRepository
 import javax.inject.Inject
 
 class GetBugsRepositoryImpl @Inject constructor(
-    val getBugsApiService: GetBugsApiService
+    private val getBugsApiService: GetBugsApiService
 ) : GetBugsRepository {
 
     override suspend fun getAllBugs(): Resource {
