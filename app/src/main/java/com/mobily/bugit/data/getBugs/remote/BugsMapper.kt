@@ -1,6 +1,6 @@
 package com.mobily.bugit.data.getBugs.remote
 
-import com.mobily.bugit.domain.getBugs.Bug
+import com.mobily.bugit.domain.Bug
 import java.util.UUID
 
 object BugsMapper {
@@ -9,13 +9,15 @@ object BugsMapper {
             spreadsheet.sheets.forEach {sheet->
                 sheet.data.forEach{gridData->
                    gridData.rowData.forEach { rowData ->
-                       add(Bug(
-                           id = UUID.randomUUID().toString(),
-                           title = rowData.values[0].formattedValue,
-                           description = rowData.values[1].formattedValue,
-                           imageUrl = rowData.values[2].formattedValue,
+                       add(
+                           Bug(
+                           id = rowData.values[0].formattedValue,
+                           title = rowData.values[1].formattedValue,
+                           description = rowData.values[2].formattedValue,
+                           imageUrl = rowData.values[3].formattedValue,
                            date = sheet.properties.title
-                       ))
+                       )
+                       )
                    }
                 }
             }

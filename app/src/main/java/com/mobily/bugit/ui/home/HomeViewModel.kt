@@ -2,7 +2,7 @@ package com.mobily.bugit.ui.home
 
 import androidx.lifecycle.viewModelScope
 import com.mobily.bugit.domain.Resource
-import com.mobily.bugit.domain.getBugs.Bug
+import com.mobily.bugit.domain.Bug
 import com.mobily.bugit.domain.getBugs.GetBugsRepository
 import com.mobily.bugit.ui.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,7 +23,7 @@ class HomeViewModel @Inject constructor(
             if(resource is Resource.Success<*>){
                 sendEvent(HomeReducer.HomeEvent.UpdateBugsData(resource.data as List<Bug>))
             }else{
-                sendEvent(HomeReducer.HomeEvent.ShowError((resource as Resource.Error).error))
+                sendEventForEffect(HomeReducer.HomeEvent.ShowError((resource as Resource.Error).error))
             }
         }
     }

@@ -1,4 +1,4 @@
-package com.mobily.bugit.ui
+package com.mobily.bugit.ui.utils
 
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable

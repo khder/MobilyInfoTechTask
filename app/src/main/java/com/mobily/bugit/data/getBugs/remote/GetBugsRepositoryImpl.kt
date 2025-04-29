@@ -2,7 +2,6 @@ package com.mobily.bugit.data.getBugs.remote
 
 import com.mobily.bugit.data.Config
 import com.mobily.bugit.domain.Resource
-import com.mobily.bugit.domain.getBugs.Bug
 import com.mobily.bugit.domain.getBugs.GetBugsRepository
 import javax.inject.Inject
 

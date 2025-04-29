@@ -1,7 +1,7 @@
 package com.mobily.bugit.ui.home
 
 import androidx.compose.runtime.Immutable
-import com.mobily.bugit.domain.getBugs.Bug
+import com.mobily.bugit.domain.Bug
 import com.mobily.bugit.ui.base.Reducer
 
 class HomeReducer : Reducer<HomeReducer.HomeState,HomeReducer.HomeEvent,HomeReducer.HomeEffect> {
