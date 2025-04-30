@@ -24,7 +24,11 @@ class AddBugRepositoryImpl @Inject constructor(
 ) : AddBugRepository {
     override suspend fun addBug(bug: Bug) :Resource {
         try {
-            val bugsSheets = getBugsApiService.getAllBugs(Config.SPREAD_SHEET_ID)
+            val bugsSheets = getBugsApiService.getAllBugs(
+                spreadsheetId = Config.SPREAD_SHEET_ID,
+                apiKey = Config.API_KEY,
+                includeGridData = true
+            )
             var isBugSheetExist = false
             for (i in 0..<bugsSheets.sheets.size) {
                 if(bugsSheets.sheets[i].properties.title == bug.date){

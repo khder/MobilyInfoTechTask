@@ -79,6 +79,4 @@ dependencies {
     implementation(libs.lifecycle.runtime.compose)
     //coil image
     implementation(libs.coil.compose)
-    //storage
-    implementation(libs.cloudinary.android)
 }

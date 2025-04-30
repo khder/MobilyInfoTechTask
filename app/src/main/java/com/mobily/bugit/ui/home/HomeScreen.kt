@@ -23,7 +23,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import com.mobily.bugit.domain.Bug
+import com.mobily.bugit.ui.Screen
 import com.mobily.bugit.ui.utils.ImageLoader
 import com.mobily.bugit.ui.utils.Loading
 import com.mobily.bugit.ui.utils.rememberFlowWithLifecycle
@@ -31,7 +33,8 @@ import com.mobily.bugit.ui.utils.rememberFlowWithLifecycle
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    viewModel: HomeViewModel = hiltViewModel()
+    viewModel: HomeViewModel = hiltViewModel(),
+    navController: NavController
 ){
     val state = viewModel.state.collectAsStateWithLifecycle()
     val effect = rememberFlowWithLifecycle(viewModel.effect)
@@ -42,6 +45,7 @@ fun HomeScreen(
                 HomeReducer.HomeEffect.NavigateToAddBugScreen -> {
                     // This effect would result in a navigation to another screen of the application
                     // with the topicId as a parameter.
+                    navController.navigate(route = Screen.AddBugScreen.route)
                 }
 
                 is HomeReducer.HomeEffect.ShowError -> {
@@ -73,8 +77,7 @@ fun HomeScreenContent(
 ){
     Loading(isShowLoading = bugsLoading)
 
-    if(!bugsLoading){
-        if(bugs.isNotEmpty()) {
+    if(bugs.isNotEmpty()) {
             LazyColumn(modifier = Modifier.padding(16.dp)) {
                 items(items = bugs, key = { bug -> bug.id }) { bug ->
                     BugRow(
@@ -91,7 +94,6 @@ fun HomeScreenContent(
                     .padding(16.dp),
                 textAlign = TextAlign.Center
             )
-        }
     }
 
     SmallFloatingActionButton(

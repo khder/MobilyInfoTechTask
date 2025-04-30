@@ -1,5 +1,6 @@
 package com.mobily.bugit.di
 
+import com.mobily.bugit.data.addBug.remote.AddBugApiService
 import com.mobily.bugit.data.getBugs.remote.GetBugsApiService
 import dagger.Module
 import dagger.Provides
@@ -21,6 +22,10 @@ class DataModule {
     @Provides
     fun provideGetBugsApiService(retrofit: Retrofit): GetBugsApiService = retrofit.create(
         GetBugsApiService::class.java)
+
+    @Provides
+    fun provideAddBugsApiService(retrofit: Retrofit): AddBugApiService = retrofit.create(
+        AddBugApiService::class.java)
 
     @Provides
     fun provideRetrofit(

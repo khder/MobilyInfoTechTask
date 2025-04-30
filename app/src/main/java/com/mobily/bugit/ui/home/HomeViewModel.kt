@@ -18,6 +18,7 @@ class HomeViewModel @Inject constructor(
 ) {
     init {
         viewModelScope.launch {
+            sendEvent(HomeReducer.HomeEvent.UpdateBugsLoading(isLoading = true))
             val resource = getBugsRepository.getAllBugs()
             sendEvent(HomeReducer.HomeEvent.UpdateBugsLoading(isLoading = false))
             if(resource is Resource.Success<*>){
