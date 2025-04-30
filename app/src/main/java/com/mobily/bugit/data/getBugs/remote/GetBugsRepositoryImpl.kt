@@ -12,7 +12,7 @@ class GetBugsRepositoryImpl @Inject constructor(
     override suspend fun getAllBugs(): Resource {
         return try {
             Resource.Success(
-                BugsMapper.mapToBugs(getBugsApiService.getAllBugs(Config.spreadsheetId))
+                BugsMapper.mapToBugs(getBugsApiService.getAllBugs(Config.SPREAD_SHEET_ID))
             )
         }catch (e:Exception){
             Resource.Error(e.localizedMessage)

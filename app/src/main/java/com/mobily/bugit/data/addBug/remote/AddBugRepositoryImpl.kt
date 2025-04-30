@@ -1,5 +1,6 @@
 package com.mobily.bugit.data.addBug.remote
 
+import android.net.Uri
 import com.mobily.bugit.common.RandomNumbersUtils
 import com.mobily.bugit.data.Config
 import com.mobily.bugit.data.getBugs.remote.CellData
@@ -12,7 +13,9 @@ import com.mobily.bugit.data.getBugs.remote.SpreadSheetRemote
 import com.mobily.bugit.domain.Bug
 import com.mobily.bugit.domain.Resource
 import com.mobily.bugit.domain.addBug.AddBugRepository
-import java.util.UUID
+import okhttp3.MediaType
+import okhttp3.RequestBody
+import java.io.File
 import javax.inject.Inject
 
 class AddBugRepositoryImpl @Inject constructor(
@@ -21,7 +24,7 @@ class AddBugRepositoryImpl @Inject constructor(
 ) : AddBugRepository {
     override suspend fun addBug(bug: Bug) :Resource {
         try {
-            val bugsSheets = getBugsApiService.getAllBugs(Config.spreadsheetId)
+            val bugsSheets = getBugsApiService.getAllBugs(Config.SPREAD_SHEET_ID)
             var isBugSheetExist = false
             for (i in 0..<bugsSheets.sheets.size) {
                 if(bugsSheets.sheets[i].properties.title == bug.date){
@@ -29,11 +32,12 @@ class AddBugRepositoryImpl @Inject constructor(
                     break
                 }
             }
+            val imageUrl = Config.GOOGLE_DRIVE_API_URL + uploadBugImage(bug.imageFilePath!!) + "?alt=media&source=downloadUrl"
             if(isBugSheetExist){
                 addBugApiService.addBugExistingSheet(
-                    authKey = Config.spreadsheetTokenKey,
+                    authKey = Config.ACCESS_TOKEN_KEY,
                     valueInputOption = "RAW",
-                    spreadsheetId = Config.spreadsheetId,
+                    spreadsheetId = Config.SPREAD_SHEET_ID,
                     sheetName = bug.date,
                     sheetInputValuesRemote = SheetInputValuesRemote(
                         majorDimension = "COLUMNS",
@@ -44,13 +48,13 @@ class AddBugRepositoryImpl @Inject constructor(
                             ),
                             arrayListOf(bug.title),
                             arrayListOf(bug.description),
-                            arrayListOf(bug.imageUrl!!)
+                            arrayListOf(imageUrl)
                         )
                     )
                 )
             }else{
                 addBugApiService.addBugNewSheet(
-                    Config.spreadsheetApiKey,
+                    Config.API_KEY,
                     SpreadSheetRemote(sheets = listOf(
                         Sheet(
                             properties = SheetProperties(
@@ -75,7 +79,7 @@ class AddBugRepositoryImpl @Inject constructor(
                                             bug.description
                                         ))
                                         add(CellData(
-                                            bug.imageUrl!!
+                                            imageUrl
                                         ))
                                     }
                                 ))
@@ -89,5 +93,15 @@ class AddBugRepositoryImpl @Inject constructor(
             return Resource.Error(e.localizedMessage)
         }
 
+    }
+
+    override suspend fun uploadBugImage(filePath: Uri): String {
+        val uploadBugImageResponse = addBugApiService.UploadBugImage(
+            url = Config.GOOGLE_DRIVE_API_URL,
+            authKey = Config.ACCESS_TOKEN_KEY,
+            uploadType = Config.UPLOAD_TYPE_MEDIA,
+            imageFileRequest = RequestBody.create(MediaType.parse("image/*"),File(filePath.path!!))
+        )
+        return uploadBugImageResponse.id
     }
 }
