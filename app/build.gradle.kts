@@ -80,4 +80,5 @@ dependencies {
     //coil image
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
+    //implementation(libs.core.splashscreen)
 }

@@ -16,8 +16,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SmallFloatingActionButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -25,22 +23,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.LifecyclePauseOrDisposeEffectResult
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.mobily.bugit.data.Config
 import com.mobily.bugit.domain.Bug
-import com.mobily.bugit.ui.Screen
+import com.mobily.bugit.ui.Screens
 import com.mobily.bugit.ui.utils.ImageLoader
 import com.mobily.bugit.ui.utils.Loading
 import com.mobily.bugit.ui.utils.rememberFlowWithLifecycle
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
@@ -67,7 +62,7 @@ fun HomeScreen(
                 HomeReducer.HomeEffect.NavigateToAddBugScreen -> {
                     // This effect would result in a navigation to another screen of the application
                     // with the topicId as a parameter.
-                    navController.navigate(route = Screen.AddBugScreen.route)
+                    navController.navigate(route = Screens.AddBugScreens.route)
                 }
 
                 is HomeReducer.HomeEffect.ShowError -> {
