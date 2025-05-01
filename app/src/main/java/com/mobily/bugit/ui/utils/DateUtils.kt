@@ -6,7 +6,7 @@ import java.util.Locale
 
 object DateUtils {
     fun getCurrentDateFormatted():String{
-        val formatter = SimpleDateFormat("dd-MM-yy", Locale.getDefault())
+        val formatter = SimpleDateFormat("dd-MM-yy", Locale.ENGLISH)
         return formatter.format(Date())
     }
 }

@@ -79,4 +79,5 @@ dependencies {
     implementation(libs.lifecycle.runtime.compose)
     //coil image
     implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
 }

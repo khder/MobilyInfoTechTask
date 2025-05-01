@@ -16,7 +16,7 @@ class HomeViewModel @Inject constructor(
     initialState = HomeReducer.HomeState.initial(),
     reducer = HomeReducer()
 ) {
-    init {
+    suspend fun loadAllBugs(){
         viewModelScope.launch {
             sendEvent(HomeReducer.HomeEvent.UpdateBugsLoading(isLoading = true))
             val resource = getBugsRepository.getAllBugs()

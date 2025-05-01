@@ -3,18 +3,13 @@ package com.mobily.bugit.data.addBug.remote
 import android.net.Uri
 import com.mobily.bugit.common.RandomNumbersUtils
 import com.mobily.bugit.data.Config
-import com.mobily.bugit.data.getBugs.remote.CellData
 import com.mobily.bugit.data.getBugs.remote.GetBugsApiService
-import com.mobily.bugit.data.getBugs.remote.GridData
-import com.mobily.bugit.data.getBugs.remote.RowData
-import com.mobily.bugit.data.getBugs.remote.Sheet
 import com.mobily.bugit.data.getBugs.remote.SheetProperties
-import com.mobily.bugit.data.getBugs.remote.SpreadSheetRemote
 import com.mobily.bugit.domain.Bug
 import com.mobily.bugit.domain.Resource
 import com.mobily.bugit.domain.addBug.AddBugRepository
-import okhttp3.MediaType
-import okhttp3.RequestBody
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 import javax.inject.Inject
 
@@ -36,62 +31,50 @@ class AddBugRepositoryImpl @Inject constructor(
                     break
                 }
             }
-            val imageUrl = Config.GOOGLE_DRIVE_API_URL + uploadBugImage(bug.imageFilePath!!) + "?alt=media&source=downloadUrl"
-            if(isBugSheetExist){
-                addBugApiService.addBugExistingSheet(
+            val imageUrl = Config.GOOGLE_DRIVE_SHOW_IMAGE_URL + uploadBugImage(bug.imageFilePath!!) + "?alt=media&source=downloadUrl"
+
+            if(!isBugSheetExist){
+                addBugApiService.createNewSheet(
                     authKey = Config.ACCESS_TOKEN_KEY,
-                    valueInputOption = "RAW",
                     spreadsheetId = Config.SPREAD_SHEET_ID,
-                    sheetName = bug.date,
-                    sheetInputValuesRemote = SheetInputValuesRemote(
-                        majorDimension = "COLUMNS",
-                        values = arrayListOf(
-                            arrayListOf(RandomNumbersUtils.generateRandomNumberAsString(
-                                RandomNumbersUtils.FROM_DEFAULT,
-                                RandomNumbersUtils.TO_DEFAULT)
-                            ),
-                            arrayListOf(bug.title),
-                            arrayListOf(bug.description),
-                            arrayListOf(imageUrl)
-                        )
+                    spreadSheetRequest = SpreadSheetRequest(
+                        arrayListOf<Request>().apply {
+                            add(Request(
+                                AddSheetRequest(
+                                    properties = SheetProperties(
+                                        RandomNumbersUtils.generateRandomNumber(
+                                            RandomNumbersUtils.FROM_DEFAULT,
+                                            RandomNumbersUtils.TO_DEFAULT
+                                        ),
+                                        title = bug.date
+                                    )
+                                )
+                            ))
+                        }
                     )
                 )
-            }else{
-                addBugApiService.addBugNewSheet(
-                    Config.API_KEY,
-                    SpreadSheetRemote(sheets = listOf(
-                        Sheet(
-                            properties = SheetProperties(
-                                sheetId = RandomNumbersUtils.generateRandomNumber(
-                                    from = RandomNumbersUtils.FROM_DEFAULT,
-                                    to = RandomNumbersUtils.TO_DEFAULT
-                                ), title = bug.date
-                            ),
-                            data = arrayListOf(GridData(
-                                arrayListOf(RowData(
-                                    arrayListOf<CellData>().apply {
-                                        add(CellData(
-                                            RandomNumbersUtils.generateRandomNumberAsString(
-                                                RandomNumbersUtils.FROM_DEFAULT,
-                                                RandomNumbersUtils.TO_DEFAULT
-                                            )
-                                        ))
-                                        add(CellData(
-                                           bug.title
-                                        ))
-                                        add(CellData(
-                                            bug.description
-                                        ))
-                                        add(CellData(
-                                            imageUrl
-                                        ))
-                                    }
-                                ))
-                            ))
-                        )
-                    ))
-                )
             }
+
+            addBugApiService.addBugExistingSheet(
+                authKey = Config.ACCESS_TOKEN_KEY,
+                valueInputOption = "RAW",
+                spreadsheetId = Config.SPREAD_SHEET_ID,
+                sheetName = bug.date,
+                sheetInputValuesRemote = SheetInputValuesRemote(
+                    majorDimension = "COLUMNS",
+                    values = arrayListOf(
+                        arrayListOf(RandomNumbersUtils.generateRandomNumberAsString(
+                            RandomNumbersUtils.FROM_DEFAULT,
+                            RandomNumbersUtils.TO_DEFAULT)
+                        ),
+                        arrayListOf(bug.title),
+                        arrayListOf(bug.description),
+                        arrayListOf(imageUrl)
+                    )
+                )
+            )
+
+
             return Resource.Success<String>()
         }catch (e:Exception){
             return Resource.Error(e.localizedMessage)
@@ -100,11 +83,11 @@ class AddBugRepositoryImpl @Inject constructor(
     }
 
     override suspend fun uploadBugImage(filePath: Uri): String {
-        val uploadBugImageResponse = addBugApiService.UploadBugImage(
-            url = Config.GOOGLE_DRIVE_API_URL,
+        val uploadBugImageResponse = addBugApiService.uploadBugImage(
+            url = Config.GOOGLE_DRIVE_UPDATE_API_URL,
             authKey = Config.ACCESS_TOKEN_KEY,
             uploadType = Config.UPLOAD_TYPE_MEDIA,
-            imageFileRequest = RequestBody.create(MediaType.parse("image/*"),File(filePath.path!!))
+            imageFileRequest = File(filePath.path!!).asRequestBody("image/*".toMediaTypeOrNull())
         )
         return uploadBugImageResponse.id
     }

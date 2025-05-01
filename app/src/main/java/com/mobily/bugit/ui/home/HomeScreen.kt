@@ -11,24 +11,37 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallFloatingActionButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.LifecyclePauseOrDisposeEffectResult
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.mobily.bugit.data.Config
 import com.mobily.bugit.domain.Bug
 import com.mobily.bugit.ui.Screen
 import com.mobily.bugit.ui.utils.ImageLoader
 import com.mobily.bugit.ui.utils.Loading
 import com.mobily.bugit.ui.utils.rememberFlowWithLifecycle
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(
@@ -39,6 +52,15 @@ fun HomeScreen(
     val state = viewModel.state.collectAsStateWithLifecycle()
     val effect = rememberFlowWithLifecycle(viewModel.effect)
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    LifecycleResumeEffect(key1 = "refreshDataOnResume") {
+        coroutineScope.launch {
+            viewModel.loadAllBugs()
+        }
+        onPauseOrDispose {
+            // do any needed clean up here
+        }
+    }
     LaunchedEffect(effect) {
         effect.collect { action ->
             when (action) {
@@ -68,6 +90,7 @@ fun HomeScreen(
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreenContent(
     modifier: Modifier = Modifier,
@@ -75,10 +98,33 @@ fun HomeScreenContent(
     bugsLoading:Boolean,
     onAddBugButtonClicked:()->Unit
 ){
-    Loading(isShowLoading = bugsLoading)
 
-    if(bugs.isNotEmpty()) {
-            LazyColumn(modifier = Modifier.padding(16.dp)) {
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(text = "AllBugs")
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                titleContentColor = MaterialTheme.colorScheme.primary,
+                            ),
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick =onAddBugButtonClicked) {
+                Icon(imageVector = Icons.Filled.Add, contentDescription = "Add")
+            }
+        }
+    ) {paddingValues->
+        if(bugsLoading) {
+            Loading()
+        }
+        if(bugs.isNotEmpty()) {
+            LazyColumn(modifier = Modifier
+                .padding(paddingValues)
+                .padding(16.dp)) {
                 items(items = bugs, key = { bug -> bug.id }) { bug ->
                     BugRow(
                         modifier = modifier,
@@ -94,16 +140,8 @@ fun HomeScreenContent(
                     .padding(16.dp),
                 textAlign = TextAlign.Center
             )
+        }
     }
-
-    SmallFloatingActionButton(
-        onClick = {onAddBugButtonClicked()},
-        containerColor = MaterialTheme.colorScheme.secondaryContainer,
-        contentColor = MaterialTheme.colorScheme.secondary
-    ) {
-        Icon(Icons.Filled.Add, "Small floating action button.")
-    }
-
 }
 
 @Composable
@@ -112,21 +150,28 @@ private fun BugRow(
     bug: Bug
 ){
     Card(modifier = modifier) {
+        Spacer(modifier = Modifier.height(10.dp))
         ImageLoader(
+            modifier = Modifier.padding(horizontal = 10.dp),
             url = bug.imageUrl!!,
-            contentDescription = bug.description
+            contentDescription = bug.description,
+            authHeader = Config.ACCESS_TOKEN_KEY
         )
         Spacer(modifier = Modifier.height(10.dp))
         Text(
+            modifier = Modifier.padding(horizontal = 10.dp),
             text = bug.title,
         )
         Spacer(modifier = Modifier.height(10.dp))
         Text(
+            modifier = Modifier.padding(horizontal = 10.dp),
             text = bug.description,
         )
         Spacer(modifier = Modifier.height(10.dp))
         Text(
+            modifier = Modifier.padding(horizontal = 10.dp),
             text = bug.date,
         )
+        Spacer(modifier = Modifier.height(10.dp))
     }
 }
